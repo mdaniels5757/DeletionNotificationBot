@@ -928,12 +928,15 @@ def main(*args):
 
 
 if __name__ == "__main__":
-    while True:
-        try:
-            main()
-            min = 10
-            print("\n\nSLEEP FOR '%d minutes'" % min)
-            for i in tqdm(range(min)):
-                time.sleep(60)  # 60 = 1 min
-        except Exception as err:
-            print(err)
+
+    # while True:
+    try:
+        main()
+    finally:
+        pywikibot.stopme()
+            # min = 10
+            # print("\n\nSLEEP FOR '%d minutes'" % min)
+            # for i in tqdm(range(min)):
+            #     time.sleep(60)  # 60 = 1 min
+        # except Exception as err:
+        #     print(err)
