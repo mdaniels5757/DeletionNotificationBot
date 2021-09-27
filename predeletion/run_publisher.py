@@ -87,8 +87,7 @@ def main(*args):
 
 
 if __name__ == "__main__":
-    while True:
         try:
             main()
-        except Exception as err:
-            print(err)
+        finally:
+            pywikibot.stopme()
