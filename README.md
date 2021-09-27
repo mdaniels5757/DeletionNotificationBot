@@ -9,7 +9,7 @@ This bot **notifies the uploaders** when their uploads get nominated for deletio
 ```
 git clone https://gitlab.com/Bd9a119b5d05019d7c923207398ef3c3/DeletionNotificationBot.git
 cd DeletionNotificationBot
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp config.yaml.example config.yaml
