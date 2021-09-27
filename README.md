@@ -17,7 +17,7 @@ cp user-config.py.example user-config.py
 openssl rand -base64 32 # PREFIX
 openssl rand -base64 32 # KEY
 vi config.yaml # 'prefix' and 'key' from output of above commands, 'pubfiledir' to any empty writeable folder
-chmod 600 config.yaml
+chmod 600 config.yaml Change the host to 'tools-redis.svc.eqiad.wmflabs' on toolforge.
 vi user-config.py # Update the 'password_file' and run 'chmod 600 user-password.py'
 
 ```
