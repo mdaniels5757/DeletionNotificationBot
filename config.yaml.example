@@ -1,0 +1,20 @@
+# This is an example but please run 'chmod 600 config.yaml'
+# host: tools-redis.svc.eqiad.wmflabs
+# port: 6379
+# db: 0
+# pubfiledir must be created and must all creation('touch') of files within it
+# prefix is the redis prefix. See the following link.
+# https://web.archive.org/web/20210829222633/https://wikitech.wikimedia.org/wiki/Help:Toolforge/Redis_for_Toolforge#Security
+# key is used to encrypt text and decrypt the ciphertext, yes it's Symmetric.
+# generate prefix and key by running 'openssl rand -base64 32'
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  db: 0
+  prefix: 3YKXsLhqxRYrMkk2mPp2TdpYxEASNMaqNZD5LBMiFas=
+  expiremins: 60
+  key: -M7yTOOpqxPHqsblqfDCCvgi4fonzYxbKXv_vV31woo=
+
+mom:
+  pubfiledir: /home/username/skaugfjkgjkdgjkdsgjfkdsjkfkdhsk/pub/
