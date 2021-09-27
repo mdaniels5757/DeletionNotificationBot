@@ -21,9 +21,15 @@ chmod 600 config.yaml Change the host to 'tools-redis.svc.eqiad.wmflabs' on tool
 vi user-config.py # Update the 'password_file' and run 'chmod 600 user-password.py'
 
 ```
+## See Also
+ - https://commons.wikimedia.org/wiki/Special:Contributions/Deletion_Notification_Bot
+ - https://wikitech.wikimedia.org/wiki/Help:Toolforge/Redis_for_Toolforge
+ - https://wikitech.wikimedia.org/wiki/Help:Toolforge/My_first_Pywikibot_tool
+ - https://wikitech.wikimedia.org/wiki/Help:Toolforge/Pywikibot
+ - https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams
+ - https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
 
 ***
-
 
 ## License
 The MIT License
