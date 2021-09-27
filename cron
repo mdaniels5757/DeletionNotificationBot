@@ -1,1 +1,4 @@
 */10 * * * * jsub -once -quiet -N pre_del_pub bash /data/project/eatchabot/DeletionNotificationBot/start_pre_del_publisher.sh
+
+*/10 * * * * jsub -once -quiet -N pre_del_notify bash /data/project/eatchabot/DeletionNotificationBot/start_pre_del_notify.sh
+
