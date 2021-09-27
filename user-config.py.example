@@ -1,0 +1,6 @@
+mylang = family = "commons"
+
+usernames["commons"]["commons"] = "Deletion Notification Bot"
+
+# run 'chmod 600 user-password.py'
+password_file = "/full-path/user-password.py"
