@@ -13,7 +13,7 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp config.yaml.example config.yaml
-cp user-config.py.example cp user-config.py
+cp user-config.py.example user-config.py
 openssl rand -base64 32 # PREFIX
 openssl rand -base64 32 # KEY
 vi config.yaml # 'prefix' and 'key' from output of above commands, 'pubfiledir' to any empty writeable folder
