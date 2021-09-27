@@ -29,7 +29,7 @@ def get(key):
     value = r.get(secure_key)
     if not value:
         return None
-    return json.loads(value)
+    return json.loads(value.decode())
 
 
 if __name__ == "__main__":
