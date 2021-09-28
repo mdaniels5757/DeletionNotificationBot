@@ -30,7 +30,8 @@ other_speedy_deletions_hot_words = [
     "db-g7",
     "SD|1=G7",
     "g7",
-    "{{speedy" "{{db}}",
+    "{{speedy", 
+    "{{db",
 ]
 
 personal_files_for_speedy_deletion_hot_words = [
