@@ -195,6 +195,10 @@ def notifiable(
         handle_if_uploader_is_nominator(uploader, redis_file_name)
         return False
 
+    if nominator == "AntiCompositeBot":
+        print("AntiCompositeBot's piece of the cake.")
+        return False
+
     if does_the_uploader_know(uploader, file_name, subpage=None):
         handle_if_uploader_knows(redis_file_name)
         return False
@@ -272,11 +276,6 @@ def handle_advertisements_speedy_deletion(uploader_and_uploads):
                 uploader,
                 file_name,
             ):
-                continue
-
-            if nominator == "AntiCompositeBot":
-                print("AntiCompositeBot's piece of the cake.")
-                delete_file(redis_file_name)
                 continue
 
             i += 1
