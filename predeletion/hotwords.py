@@ -35,7 +35,8 @@ other_speedy_deletions_hot_words = [
 
 personal_files_for_speedy_deletion_hot_words = [
     "{{SD|F10",
-    "{{Selfie" "noncontributor",
+    "{{Selfie", 
+    "noncontributor",
     "personal file",
     "non-contributors",
     "personal image",
