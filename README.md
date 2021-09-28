@@ -19,7 +19,7 @@ openssl rand -base64 32 # KEY
 vi config.yaml # 'prefix' and 'key' from output of above commands, 'pubfiledir' to any empty writeable folder
 chmod 600 config.yaml Change the host to 'tools-redis.svc.eqiad.wmflabs' on toolforge.
 vi user-config.py # Update the 'password_file' and run 'chmod 600 user-password.py'
-bash start_pre_del_publisher.sh # To publish the list files tagged for deletion on message broker (redis + fs)
+bash start_pre_del_publisher.sh # publish the files tagged for deletion on message broker (redis + fs)
 bash start_pre_del_notify.sh # Subscriber reads published data and notify the uploader
 bash pull_restart.sh # pull updates from this repo, overwrite changes on local repo and restart the jobs.
 ```
