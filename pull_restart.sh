@@ -6,7 +6,7 @@ git reset --hard origin/main
 qstat
 qdel pre_del_pub
 qdel pre_del_notify
-sleep 30
+sleep 60
 jsub -once -quiet -N pre_del_pub bash "${parent_path}/start_pre_del_publisher.sh"
 jsub -once -quiet -N pre_del_notify bash "${parent_path}/start_pre_del_notify.sh"
 qstat
