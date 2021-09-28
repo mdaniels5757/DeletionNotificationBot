@@ -2,3 +2,5 @@
 
 */10 * * * * jsub -once -quiet -N pre_del_notify bash /data/project/eatchabot/DeletionNotificationBot/start_pre_del_notify.sh
 
+14 0,6,12,18 * * * jsub -once -quiet -N pull_restart_del_bot bash /data/project/eatchabot/DeletionNotificationBot/pull_restart.sh
+
