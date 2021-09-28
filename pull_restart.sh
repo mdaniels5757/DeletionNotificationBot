@@ -1,7 +1,8 @@
 #!/bin/bash
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "${parent_path}"
-git pull
+git fetch --all
+git reset --hard origin/main
 qstat
 qdel pre_del_pub
 qdel pre_del_notify
