@@ -51,7 +51,7 @@ def handle_if_a_moved_file_redirect(redis_file_name):
 
 def handle_if_uploader_is_nominator(uploader, redis_file_name):
     print(
-        "NOT NOTIFYING : Uploader (User:%s) themselve nominated thier owen upload for deltion, Nothing to Do Here!"
+        "NOT NOTIFYING : Uploader (User:%s) themselve nominated their own upload for deletion, nothing to do here!"
         % uploader
     )
     delete_file(redis_file_name)
