@@ -92,7 +92,10 @@ def does_the_uploader_know(uploader, file_name, subpage=None):
         return True
 
     if subpage:
-        subpage_name = "Commons:Deletion requests/" + subpage
+        # subpage_name = "Commons:Deletion requests/" + subpage
+        # see issue at https://commons.wikimedia.org/w/index.php?diff=602311329&oldid=602310441
+        # The namespace is usually not used in the templates but the subapge.
+        subpage_name = subpage
         print(subpage_name)
         if (
             subpage_name.replace(" ", "_").lower()
