@@ -204,7 +204,7 @@ def notifiable(
         print("AntiCompositeBot's piece of the cake.")
         return False
 
-    if does_the_uploader_know(uploader, file_name, subpage=None):
+    if does_the_uploader_know(uploader, file_name, subpage=subpage):
         handle_if_uploader_knows(redis_file_name)
         return False
 
