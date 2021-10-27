@@ -95,7 +95,7 @@ def does_the_uploader_know(uploader, file_name, subpage=None):
         # subpage_name = "Commons:Deletion requests/" + subpage
         # see issue at https://commons.wikimedia.org/w/index.php?diff=602311329&oldid=602310441
         # The namespace is usually not used in the templates but the subapge.
-        subpage_name = subpage
+        subpage_name = subpage.strip()
         print(subpage_name)
         if (
             subpage_name.replace(" ", "_").lower()
@@ -103,6 +103,8 @@ def does_the_uploader_know(uploader, file_name, subpage=None):
         ):
             print("subpage_name in uploader_talk_page_text")
             return True
+
+        subpage_name = "Commons:Deletion requests/" + subpage.strip()    
         page = pywikibot.Page(SITE, subpage_name)
         if not page.exists():
             return False
