@@ -27,6 +27,7 @@ other_speedy_deletions_hot_words = [
     "Requesting speedy deletion",
     "{{speedydeletion",
     "{{csd",
+    "spd|f10",    
     "db-g7",
     "SD|1=G7",
     "g7",
