@@ -25,14 +25,14 @@ def stream():
 
 def recentchanges():
     for data in stream():
-        # print(data)
+        print(data)
         title = data["title"]
         comment = data["comment"]
         revisionid = data["revision"]["new"]
         parsedcomment = data["parsedcomment"]
         user = data["user"]
         timestamp = data["timestamp"]
-        # print(title, comment, revisionid, parsedcomment)
+        print(title, comment, revisionid, parsedcomment)
         yield (title, comment, revisionid, parsedcomment, user, timestamp)
 
 

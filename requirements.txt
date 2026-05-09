@@ -1,6 +1,7 @@
 sseclient
 mwparserfromhell
 pywikibot
+requests_oauthlib
 redis
 urllib3
 cryptography

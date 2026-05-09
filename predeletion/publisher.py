@@ -139,6 +139,7 @@ class NominatorAndNomination:
         self.set_copyright_violations_nomination_reason()
 
     def set_copyright_violations_nomination_reason(self):
+        # print(f"Getting text, line 142")
         text = pywikibot.Page(SITE, self.file_name).get()
         text = re.sub(
             r"\(\[\[User talk:(?:.*?)\|<span class=\"signature(?:.*)\(UTC\)", " ", text
@@ -148,6 +149,8 @@ class NominatorAndNomination:
         if match:
             reason = match.group(1)
             reason = reason.replace("1=", " ").replace("source=", " ").replace("|", " ")
+            # Not sure why I commented out '.replace("|", " ")' on 20250421, because it's needed:
+            # see https://commons.wikimedia.org/wiki/Special:Permalink/1071557850 -- Mdaniels 20250814
         else:
             if re.search(r"{{(?:\s*?|)logo(.*?)}}", text):
                 reason = "File is not a freely licensed logo"
@@ -210,6 +213,7 @@ class NominatorAndNomination:
         self.other_speedy_deletions_nomination_reason()
 
     def other_speedy_deletions_nomination_reason(self):
+        # print(f"Getting text, line 214")
         text = pywikibot.Page(SITE, self.file_name).get()
 
         if re.search(
@@ -314,7 +318,8 @@ class NominatorAndNomination:
         )
         if match and not self.nomination_reason:
             reason = (
-                match.group(1).replace("1=", " ").replace("|", " ").replace("2=", " ")
+                match.group(1).replace("1=", " ").replace("2=", " ").replace("|", " ") # Commented out this replacement -- MDaniels 20250421
+                # Uncommented .replace("|", " ") per [[Special:Permalink/1124217287]]
             )
             self.nomination_reason = re.sub(r"[Cc]ategory:", ":Category:", reason)
         regexp = r"{{(?:\s*?|)(?:[Ss]peedy|[Cc]sd|SD\|1=G7|2=|[Dd]b\-g7|[Ss]peedy\s*?[Dd]elet(?:e|ion))(?:\s*?|)\|(.*?)}}"
@@ -323,7 +328,8 @@ class NominatorAndNomination:
             text,
         )
         if match and not self.nomination_reason:
-            reason = match.group(1).replace("1=", " ").replace("|", " ")
+            reason = match.group(1).replace("1=", " ").replace("|", " ") #Commented out this replacement -- MDaniels 20250421
+            # Uncommented per [[Special:Permalink/1028879132#Duplicated_argument_on_deletion_notification]] -- MD 20250507
             self.nomination_reason = re.sub(r"[Cc]ategory:", ":Category:", reason)
 
     # personal_files_for_speedy_deletion
@@ -344,7 +350,9 @@ class NominatorAndNomination:
         self.deletion_requests_nomination_reason()
 
     def deletion_requests_nomination_reason(self):
+        # print(f"Getting page, line 349")
         page = pywikibot.Page(SITE, self.file_name)
+        # print(f"Getting text, line 351")
         text = page.get()
 
         subpage = None
@@ -373,6 +381,7 @@ class NominatorAndNomination:
         # We will now look in all the pages that links to the file and have the DR prefix
         # and we may hit the jackpot and find the subpage.
         if not subpage:
+            # print(f"Getting backlinks, line 380")
             backlinks = page.backlinks(follow_redirects=True, namespaces=4)
 
             for page in backlinks:
@@ -437,6 +446,7 @@ class NominatorAndNomination:
 class FileNominatedForDeletion:
     def __init__(self, file_name):
         self.file_name = file_name
+        # print(f"Getting page, line 446")
         self.file = pywikibot.Page(SITE, self.file_name)
 
         if not self.file_exists():
@@ -454,6 +464,7 @@ class FileNominatedForDeletion:
         ][0]
 
         self.talk_page_name = "File_talk:" + self.file.title(with_ns=False)
+        # print(f"Getting page, line 463")
         self.talk_page = pywikibot.Page(SITE, self.talk_page_name)
         self._uploader = self.uploader()
 
@@ -544,6 +555,7 @@ class FileNominatedForDeletion:
         human_editors = []
 
         for editor in all_editors:
+            # print(f"Getting user, line 554")
             if "bot" not in pywikibot.User(SITE, editor).rights():
                 human_editors.append(editor)
 
@@ -634,7 +646,6 @@ def main():
 
     if cat:
         from pywikibot import pagegenerators
-
         gen = pagegenerators.CategorizedPageGenerator(pywikibot.Category(SITE, cat))
         for page in gen:
             file_nominated_for_deletion_name = page.title()

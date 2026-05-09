@@ -133,7 +133,7 @@ def commit(old_text, new_text, page, summary):
 
     pywikibot.showDiff(old_text, new_text)
 
-    page.put(new_text, summary=summary, watch=False, minoredit=False)
+    page.put(new_text, summary=summary, watch="nochange", minoredit=False)
 
 
 def page_creator(page, link=False, obj=False):

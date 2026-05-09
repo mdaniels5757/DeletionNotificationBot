@@ -84,7 +84,9 @@ def main(*args):
             file_nominated_for_deletion = publisher.FileNominatedForDeletion(title)
             print(repr(file_nominated_for_deletion))
             file_nominated_for_deletion.publish()
-
+        if datetime.now().time().minute == 24 and datetime.now().time().second >= 30 and datetime.now.time().hour % 4 == 0:
+            print('Stopping for a restart')
+            exit()
 
 if __name__ == "__main__":
     while True:
@@ -92,3 +94,4 @@ if __name__ == "__main__":
             main()
         except Exception as err:
             print(err)
+

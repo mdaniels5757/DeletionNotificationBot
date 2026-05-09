@@ -56,6 +56,12 @@ def handle_if_uploader_is_nominator(uploader, redis_file_name):
     )
     delete_file(redis_file_name)
 
+# def handle_if_uploader_indeffed(uploader, redis_file_name):
+#     print(
+#          "NOT NOTIFYING : Uploader (User:%s) is indefinitely blocked"
+#         % uploader
+#     )
+#     delete_file(redis_file_name)
 
 def does_the_uploader_know(uploader, file_name, subpage=None):
     uploader_talk_page_name = "User_talk:%s" % uploader
@@ -132,6 +138,7 @@ def data_printer(
     latest_revision_time,
     latest_revision_sha1,
     nomination_reason,
+    redis_file_name
 ):
     text = (
         "\n--------------------------"
@@ -145,6 +152,7 @@ def data_printer(
         + "\nlatest_revision_time : %s" % latest_revision_time
         + "\nlatest_revision_sha1 : %s" % latest_revision_sha1
         + "\nnomination_reason : %s" % nomination_reason
+        + "\nredis_file_name : %s" % redis_file_name
     )
 
     print(text)
@@ -153,7 +161,7 @@ def data_printer(
 def submit(notice, uploader, deletion_category, file_count, first_file_name):
     notice = (
         notice
-        + "\nI'm a computer program; please don't ask me questions but ask the user who nominated your file(s) for deletion or at our [[Commons:Help_desk|Help Desk]]. //~~~~"
+        + "\nI'm a computer program; please don't ask me questions but ask the user who nominated your file(s) for deletion (shown above) or at our [[Commons:Help_desk|Help Desk]]. //~~~~"
     )
     if file_count > 1:
         more_than_one_files = "and %d other file(s)" % (file_count - 1)
@@ -207,6 +215,12 @@ def notifiable(
     if does_the_uploader_know(uploader, file_name, subpage=subpage):
         handle_if_uploader_knows(redis_file_name)
         return False
+
+    # uploader_object = pywikibot.User(SITE, f"User:{uploader}")
+    # uploader_props = uploader_object.getprops()
+    # if uploader_props["blockexpiry"] and uploader_props["blockexpiry"] == "infinite":
+    #     handle_if_uploader_indeffed(redis_file_name)
+    #     return False
 
     return True
 
@@ -272,6 +286,7 @@ def handle_advertisements_speedy_deletion(uploader_and_uploads):
                 latest_revision_time,
                 latest_revision_sha1,
                 nomination_reason,
+                redis_file_name,
             )
 
             if not notifiable(
@@ -292,7 +307,7 @@ def handle_advertisements_speedy_deletion(uploader_and_uploads):
                     % (file_name, file_name)
                 )
                 notice = notice + (
-                    """\n<p style="font-size:0.8em;font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
+                    """\n<p style="font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
                     % nominator
                 )
             else:
@@ -301,7 +316,7 @@ def handle_advertisements_speedy_deletion(uploader_and_uploads):
                 if i == 2:
                     notice = notice + "\nAnd also:"
                 notice = notice + (
-                    """\n* [[:%s]] <span style="font-size:0.8em;font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
+                    """\n* [[:%s]] <span style="font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
                     % (file_name, nominator_details, nomination_details)
                 )
             file_count = i
@@ -347,6 +362,7 @@ def handle_copyright_violation(uploader_and_uploads):
                 latest_revision_time,
                 latest_revision_sha1,
                 nomination_reason,
+                redis_file_name,
             )
 
             if not notifiable(
@@ -366,7 +382,7 @@ def handle_copyright_violation(uploader_and_uploads):
                     nomination_reason,
                 )
                 notice = notice + (
-                    """\n<p style="font-size:0.8em;font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
+                    """\n<p style="font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
                     % nominator
                 )
             else:
@@ -375,7 +391,7 @@ def handle_copyright_violation(uploader_and_uploads):
                 if i == 2:
                     notice = notice + "\nAnd also:"
                 notice = notice + (
-                    """\n* [[:%s]] <span style="font-size:0.8em;font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
+                    """\n* [[:%s]] <span style="font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
                     % (file_name, nominator_details, nomination_details)
                 )
             file_count = i
@@ -421,6 +437,7 @@ def handle_other_speedy_deletion(uploader_and_uploads):
                 latest_revision_time,
                 latest_revision_sha1,
                 nomination_reason,
+                redis_file_name,
             )
 
             if not notifiable(
@@ -441,7 +458,7 @@ def handle_other_speedy_deletion(uploader_and_uploads):
                     % (file_name, file_name, nomination_reason)
                 )
                 notice = notice + (
-                    """\n<p style="font-size:0.8em;font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
+                    """\n<p style="font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
                     % nominator
                 )
             else:
@@ -450,7 +467,7 @@ def handle_other_speedy_deletion(uploader_and_uploads):
                 if i == 2:
                     notice = notice + "\nAnd also:"
                 notice = notice + (
-                    """\n* [[:%s]] <span style="font-size:0.8em;font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
+                    """\n* [[:%s]] <span style="font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
                     % (file_name, nominator_details, nomination_details)
                 )
             file_count = i
@@ -496,6 +513,7 @@ def handle_personal_files_for_speedy_deletion(uploader_and_uploads):
                 latest_revision_time,
                 latest_revision_sha1,
                 nomination_reason,
+                redis_file_name,
             )
 
             if not notifiable(
@@ -516,7 +534,7 @@ def handle_personal_files_for_speedy_deletion(uploader_and_uploads):
                     % (file_name, file_name)
                 )
                 notice = notice + (
-                    """\n<p style="font-size:0.8em;font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
+                    """\n<p style="font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
                     % nominator
                 )
             else:
@@ -525,7 +543,7 @@ def handle_personal_files_for_speedy_deletion(uploader_and_uploads):
                 if i == 2:
                     notice = notice + "\nAnd also:"
                 notice = notice + (
-                    """\n* [[:%s]] <span style="font-size:0.8em;font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
+                    """\n* [[:%s]] <span style="font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
                     % (file_name, nominator_details, nomination_details)
                 )
             file_count = i
@@ -578,6 +596,7 @@ def handle_deletion_requests(uploader_and_uploads):
                 latest_revision_time,
                 latest_revision_sha1,
                 nomination_reason,
+                redis_file_name,
             )
 
             if not notifiable(
@@ -595,7 +614,7 @@ def handle_deletion_requests(uploader_and_uploads):
                 first_file_name = file_name
                 notice = notice + "\n{{subst:idw|1=%s|2=%s}}" % (file_name, subpage)
                 notice = notice + (
-                    """\n<p style="font-size:0.8em;font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
+                    """\n<p style="font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
                     % nominator
                 )
             else:
@@ -606,7 +625,7 @@ def handle_deletion_requests(uploader_and_uploads):
                 if i == 2:
                     notice = notice + "\nAnd also:"
                 notice = notice + (
-                    """\n* [[:%s]] <span style="font-size:0.8em;font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
+                    """\n* [[:%s]] <span style="font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
                     % (file_name, nominator_details, nomination_details)
                 )
             file_count = i
@@ -652,6 +671,7 @@ def handle_media_without_license(uploader_and_uploads):
                 latest_revision_time,
                 latest_revision_sha1,
                 nomination_reason,
+                redis_file_name,
             )
 
             if not notifiable(
@@ -668,7 +688,7 @@ def handle_media_without_license(uploader_and_uploads):
                 first_file_name = file_name
                 notice = notice + "\n{{subst:image license|1=%s}}" % file_name
                 notice = notice + (
-                    """\n<p style="font-size:0.8em;font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
+                    """\n<p style="font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
                     % nominator
                 )
             else:
@@ -677,7 +697,7 @@ def handle_media_without_license(uploader_and_uploads):
                 if i == 2:
                     notice = notice + "\nAnd also:"
                 notice = notice + (
-                    """\n* [[:%s]] <span style="font-size:0.8em;font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
+                    """\n* [[:%s]] <span style="font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
                     % (file_name, nominator_details, nomination_details)
                 )
             file_count = i
@@ -723,6 +743,7 @@ def handle_media_missing_permission(uploader_and_uploads):
                 latest_revision_time,
                 latest_revision_sha1,
                 nomination_reason,
+                redis_file_name,
             )
 
             if not notifiable(
@@ -739,7 +760,7 @@ def handle_media_missing_permission(uploader_and_uploads):
                 first_file_name = file_name
                 notice = notice + "\n{{subst:image permission|1=%s}}" % file_name
                 notice = notice + (
-                    """\n<p style="font-size:0.8em;font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
+                    """\n<p style="font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
                     % nominator
                 )
             else:
@@ -748,7 +769,7 @@ def handle_media_missing_permission(uploader_and_uploads):
                 if i == 2:
                     notice = notice + "\nAnd also:"
                 notice = notice + (
-                    """\n* [[:%s]] <span style="font-size:0.8em;font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
+                    """\n* [[:%s]] <span style="font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
                     % (file_name, nominator_details, nomination_details)
                 )
             file_count = i
@@ -794,6 +815,7 @@ def handle_media_without_source(uploader_and_uploads):
                 latest_revision_time,
                 latest_revision_sha1,
                 nomination_reason,
+                redis_file_name,
             )
 
             if not notifiable(
@@ -810,7 +832,7 @@ def handle_media_without_source(uploader_and_uploads):
                 first_file_name = file_name
                 notice = notice + "\n{{subst:Image source |1=%s}}" % file_name
                 notice = notice + (
-                    """\n<p style="font-size:0.8em;font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
+                    """\n<p style="font-family:'Stencil Std'">\nUser who nominated the file for deletion (Nominator) : {{Noping|%s}}.</p>"""
                     % nominator
                 )
             else:
@@ -819,7 +841,7 @@ def handle_media_without_source(uploader_and_uploads):
                 if i == 2:
                     notice = notice + "\nAnd also:"
                 notice = notice + (
-                    """\n* [[:%s]] <span style="font-size:0.8em;font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
+                    """\n* [[:%s]] <span style="font-family:'Stencil Std'">( %s  &#124;  %s )</span>"""
                     % (file_name, nominator_details, nomination_details)
                 )
             file_count = i
@@ -835,7 +857,7 @@ def main(*args):
     args = pywikibot.handle_args(*args)
     global SITE
     SITE = pywikibot.Site()
-    print(SITE)
+    # print(SITE)
     if not SITE.logged_in():
         SITE.login()
 
@@ -930,12 +952,16 @@ def main(*args):
         else:
             pass
 
-
+count = 0
 if __name__ == "__main__":
     while True:
         try:
             main()
-            min = 10
+            min = 5
+            count = count + 1
+            if count % 20 == 0:
+                print('Stopping and restarting')
+                exit()
             print("\n\nSLEEP FOR '%d minutes'" % min)
             for i in tqdm(range(min)):
                 time.sleep(60)  # 60 = 1 min
