@@ -17,13 +17,65 @@ STANDARD_NOMINATOR = (
 
 HOTWORDS: dict[str, tuple[str, ...]] = {
     "ads": ("{{SD|G10}}", "G10", "spam"),
-    "copyvio": ("{{copyvio", "Possible copyright violation", "Marking as possible copyvio", "{{logo", "db-copyvio", "{{SD|F3}}"),
-    "speedy": ("{{SD", "{{Speedydelete|", "{{speedy|", "Requesting speedy deletion", "{{speedydeletion", "{{csd", "spd|f10", "db-g7", "SD|1=G7", "g7", "{{speedy", "{{db"),
-    "personal": ("{{SD|F10", "{{Selfie", "noncontributor", "personal file", "non-contributors", "personal image", "{{SDF10", "F10", "SDF10"),
-    "dr": ("{{delete|reason=", "[[COM:DR|Nominating for deletion]]", "{{delete|", "Nominating for deletion"),
-    "license": ("AntiCompositeBot/NoLicense/tag", "No license found, tagging with", "{{No license since"),
-    "permission": ("No permission since", "Missing [[COM:PERMISSION|permission]]", "Missing permission", "since|month=", "no permission"),
-    "source": ("This is a [[COM:DW|derivative work]] and no source or permission of the original work is provided", "{{dw no source since", "derivative work", "no source or permission", "{{No source since", "no source"),
+    "copyvio": (
+        "{{copyvio",
+        "Possible copyright violation",
+        "Marking as possible copyvio",
+        "{{logo",
+        "db-copyvio",
+        "{{SD|F3}}",
+    ),
+    "speedy": (
+        "{{SD",
+        "{{Speedydelete|",
+        "{{speedy|",
+        "Requesting speedy deletion",
+        "{{speedydeletion",
+        "{{csd",
+        "spd|f10",
+        "db-g7",
+        "SD|1=G7",
+        "g7",
+        "{{speedy",
+        "{{db",
+    ),
+    "personal": (
+        "{{SD|F10",
+        "{{Selfie",
+        "noncontributor",
+        "personal file",
+        "non-contributors",
+        "personal image",
+        "{{SDF10",
+        "F10",
+        "SDF10",
+    ),
+    "dr": (
+        "{{delete|reason=",
+        "[[COM:DR|Nominating for deletion]]",
+        "{{delete|",
+        "Nominating for deletion",
+    ),
+    "license": (
+        "AntiCompositeBot/NoLicense/tag",
+        "No license found, tagging with",
+        "{{No license since",
+    ),
+    "permission": (
+        "No permission since",
+        "Missing [[COM:PERMISSION|permission]]",
+        "Missing permission",
+        "since|month=",
+        "no permission",
+    ),
+    "source": (
+        "This is a [[COM:DW|derivative work]] and no source or permission of the original work is provided",
+        "{{dw no source since",
+        "derivative work",
+        "no source or permission",
+        "{{No source since",
+        "no source",
+    ),
 }
 SIGNATURE = (
     "\nI'm a computer program; please don't ask me questions but ask the user who "
@@ -63,14 +115,73 @@ def _dr_detail(_: DeletionNomination, subpage: str | None) -> str:
 
 
 POLICIES = (
-    CategoryPolicy("ads", _fixed("Advertisements for speedy deletion"), HOTWORDS["ads"], _notice("\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/NOADS/headingless|1=%s}}"), _reason_detail),
-    CategoryPolicy("copyvio", _fixed("Copyright violations"), HOTWORDS["copyvio"], lambda item, _: "\n\n{{subst:Copyvionote|1=%s|2=%s|3=}} " % (item.file_name, item.nomination_reason), _reason_detail),
-    CategoryPolicy("speedy", _fixed("Other speedy deletions"), HOTWORDS["speedy"], lambda item, _: "\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/SDEL/headingless|1=%s|2=%s}}" % (item.file_name, item.file_name, item.nomination_reason), _reason_detail),
-    CategoryPolicy("personal", _fixed("Personal files for speedy deletion"), HOTWORDS["personal"], _notice("\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/personalNO/headingless|1=%s}}"), _reason_detail),
-    CategoryPolicy("dr", lambda day: "Deletion requests %s" % day.strftime("%B %Y"), HOTWORDS["dr"], _dr_notice, _dr_detail, True),
-    CategoryPolicy("license", lambda day: "Media without a license as of %s" % day.strftime("%-d %B %Y"), HOTWORDS["license"], _notice("\n{{subst:image license|1=%s}}"), _reason_detail),
-    CategoryPolicy("permission", lambda day: "Media missing permission as of %s" % day.strftime("%-d %B %Y"), HOTWORDS["permission"], _notice("\n{{subst:image permission|1=%s}}"), _reason_detail),
-    CategoryPolicy("source", lambda day: "Media without a source as of %s" % day.strftime("%-d %B %Y"), HOTWORDS["source"], _notice("\n{{subst:Image source |1=%s}}"), _reason_detail),
+    CategoryPolicy(
+        "ads",
+        _fixed("Advertisements for speedy deletion"),
+        HOTWORDS["ads"],
+        _notice(
+            "\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/NOADS/headingless|1=%s}}"
+        ),
+        _reason_detail,
+    ),
+    CategoryPolicy(
+        "copyvio",
+        _fixed("Copyright violations"),
+        HOTWORDS["copyvio"],
+        lambda item, _: (
+            "\n\n{{subst:Copyvionote|1=%s|2=%s|3=}} "
+            % (item.file_name, item.nomination_reason)
+        ),
+        _reason_detail,
+    ),
+    CategoryPolicy(
+        "speedy",
+        _fixed("Other speedy deletions"),
+        HOTWORDS["speedy"],
+        lambda item, _: (
+            "\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/SDEL/headingless|1=%s|2=%s}}"
+            % (item.file_name, item.file_name, item.nomination_reason)
+        ),
+        _reason_detail,
+    ),
+    CategoryPolicy(
+        "personal",
+        _fixed("Personal files for speedy deletion"),
+        HOTWORDS["personal"],
+        _notice(
+            "\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/personalNO/headingless|1=%s}}"
+        ),
+        _reason_detail,
+    ),
+    CategoryPolicy(
+        "dr",
+        lambda day: "Deletion requests %s" % day.strftime("%B %Y"),
+        HOTWORDS["dr"],
+        _dr_notice,
+        _dr_detail,
+        True,
+    ),
+    CategoryPolicy(
+        "license",
+        lambda day: "Media without a license as of %s" % day.strftime("%-d %B %Y"),
+        HOTWORDS["license"],
+        _notice("\n{{subst:image license|1=%s}}"),
+        _reason_detail,
+    ),
+    CategoryPolicy(
+        "permission",
+        lambda day: "Media missing permission as of %s" % day.strftime("%-d %B %Y"),
+        HOTWORDS["permission"],
+        _notice("\n{{subst:image permission|1=%s}}"),
+        _reason_detail,
+    ),
+    CategoryPolicy(
+        "source",
+        lambda day: "Media without a source as of %s" % day.strftime("%-d %B %Y"),
+        HOTWORDS["source"],
+        _notice("\n{{subst:Image source |1=%s}}"),
+        _reason_detail,
+    ),
 )
 
 
@@ -100,7 +211,11 @@ def render_notice(policy: CategoryPolicy, nominations: list[DeletionNomination])
     """Render the legacy grouped talk-page text, excluding its edit summary."""
     notice = ""
     for index, item in enumerate(nominations, 1):
-        subpage = parse_deletion_request_reason(item.nomination_reason)[1] if policy.needs_subpage else None
+        subpage = (
+            parse_deletion_request_reason(item.nomination_reason)[1]
+            if policy.needs_subpage
+            else None
+        )
         if index == 1:
             notice += policy.first_notice(item, subpage)
             notice += STANDARD_NOMINATOR % item.nominator
@@ -108,11 +223,21 @@ def render_notice(policy: CategoryPolicy, nominations: list[DeletionNomination])
             if index == 2:
                 notice += "\nAnd also:"
             detail = policy.detail(item, subpage)
-            notice += "\n* [[:%s]] <span style=\"font-family:'Stencil Std'\">( Nominator : {{Noping|%s}}  &#124;  %s )</span>" % (item.file_name, item.nominator, detail)
+            notice += (
+                "\n* [[:%s]] <span style=\"font-family:'Stencil Std'\">( Nominator : {{Noping|%s}}  &#124;  %s )</span>"
+                % (item.file_name, item.nominator, detail)
+            )
     return notice
 
 
 def edit_summary(category: str, nominations: list[DeletionNomination]) -> str:
     first = nominations[0].file_name
-    extra = "and %d other file(s)" % (len(nominations) - 1) if len(nominations) > 1 else " "
-    return "Impending deletion notification - [[Category:%s|%s]] - [[:%s]] %s" % (category, category, first, extra)
+    extra = (
+        "and %d other file(s)" % (len(nominations) - 1) if len(nominations) > 1 else " "
+    )
+    return "Impending deletion notification - [[Category:%s|%s]] - [[:%s]] %s" % (
+        category,
+        category,
+        first,
+        extra,
+    )

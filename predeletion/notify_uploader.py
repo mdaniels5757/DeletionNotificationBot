@@ -21,7 +21,9 @@ def build_service(site=None, redis_client=None, clock=time.time):
     transport = RedisMarkerTransport(
         redis_client, config.REDIS_PREFIX, config.EXPIREMINS, config.PUBFILEDIR, clock
     )
-    return NotifierService(transport, NominationCodec(config.KEY), WikimediaGateway(site))
+    return NotifierService(
+        transport, NominationCodec(config.KEY), WikimediaGateway(site)
+    )
 
 
 def main(*args):

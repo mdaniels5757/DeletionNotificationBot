@@ -25,7 +25,9 @@ def fake():
         case "GA1":
             return "Gallery page without at least two images or other media files ([[COM:CSD#GA1|CSD GA1]])"
         case "GA2":
-            return "User intended to create encyclopedic content ([[COM:CSD#GA2|CSD GA2]])"
+            return (
+                "User intended to create encyclopedic content ([[COM:CSD#GA2|CSD GA2]])"
+            )
         case "C1":
             return "Improperly named category ([[COM:CSD#C1|CSD C1]])"
         case "C2":

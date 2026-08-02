@@ -52,7 +52,6 @@ def revision_that_added_the_text_first(SITE, pagename, texts_to_search, **kwargs
     data = None
 
     for revdata in history:
-
         content = revdata["slots"]["main"]["*"].lower()
         edit_summary = revdata.comment.lower()
         user = revdata.user
@@ -69,9 +68,7 @@ def revision_that_added_the_text_first(SITE, pagename, texts_to_search, **kwargs
                 data = None
 
         for text in texts_to_search:
-
             if text.lower() in text_to_be_searched:
-
                 found_nom = True
                 timestamp = revdata.timestamp
                 data = (user, content, edit_summary, text, timestamp)
@@ -80,11 +77,9 @@ def revision_that_added_the_text_first(SITE, pagename, texts_to_search, **kwargs
     # For cases when the oldest revision has the text we are looking for but
     # we exhaust the history and break out of the look.
     if found_nom:
-
         return data
 
     else:
-
         return None
 
 
@@ -99,7 +94,6 @@ def out(text, newline=True, date=False, color=None):
     """
 
     if color:
-
         text = "\03{%s}%s\03{default}" % (color, text)
 
     date_string = "%s: " % today.strftime("%Y-%m-%d %H:%M:%S") if date else ""
@@ -173,7 +167,6 @@ def is_locked(user):
     headers = {"user-agent": "User:Deletion Notification Bot @ wikimedia Commons"}
 
     try:
-
         response = requests.get(
             "https://login.wikimedia.org/w/api.php?action=query&meta=globaluserinfo&format=json&guiuser=%s"
             % user,
@@ -181,11 +174,9 @@ def is_locked(user):
         )
 
     except HTTPError as http_err:
-
         print("HTTP error occurred: %s" % http_err)
 
     except Exception as err:
-
         print("Other error occurred: %s" % err)
 
     if response.ok:

@@ -30,14 +30,27 @@ class FakeWiki:
 
 
 def record(name="File:One.jpg", sha1="a" * 40):
-    return DeletionNomination(name, "Nom", "Up", "False", "Copyright violations", "False", "n", "l", sha1, "Reason")
+    return DeletionNomination(
+        name,
+        "Nom",
+        "Up",
+        "False",
+        "Copyright violations",
+        "False",
+        "n",
+        "l",
+        sha1,
+        "Reason",
+    )
 
 
 def test_transport_and_notifier_acknowledge_only_processed_markers(tmp_path):
     now = 10_000
     redis = FakeRedis()
     clock = [now - 601]
-    transport = RedisMarkerTransport(redis, "prefix:", 60, tmp_path, clock=lambda: clock[0])
+    transport = RedisMarkerTransport(
+        redis, "prefix:", 60, tmp_path, clock=lambda: clock[0]
+    )
     codec = NominationCodec(Fernet.generate_key().decode())
     first, second = record(), record("File:Two.jpg", "b" * 40)
     first_marker = transport.publish(first.redis_key, codec.encode(first))
@@ -53,9 +66,16 @@ def test_transport_and_notifier_acknowledge_only_processed_markers(tmp_path):
 
 
 def test_expired_value_leaves_marker_for_pruner(tmp_path):
-    transport = RedisMarkerTransport(FakeRedis(), "p:", 60, tmp_path, clock=lambda: 10_000)
+    transport = RedisMarkerTransport(
+        FakeRedis(), "p:", 60, tmp_path, clock=lambda: 10_000
+    )
     marker = tmp_path / ("9000_" + "a" * 32 + "_" + "b" * 40)
     marker.touch()
-    service = NotifierService(transport, NominationCodec(Fernet.generate_key().decode()), FakeWiki(), today=lambda: date(2026, 8, 2))
+    service = NotifierService(
+        transport,
+        NominationCodec(Fernet.generate_key().decode()),
+        FakeWiki(),
+        today=lambda: date(2026, 8, 2),
+    )
     assert service.process_once() == 0
     assert marker.exists()

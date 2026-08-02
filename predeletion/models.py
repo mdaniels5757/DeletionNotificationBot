@@ -9,9 +9,16 @@ from cryptography.fernet import Fernet
 
 
 WIRE_FIELDS = (
-    "file_name", "nominator", "uploader", "uploader_is_nominator",
-    "deletion_category", "is_a_moved_file_redirect", "nomination_time",
-    "latest_revision_time", "latest_revision_sha1", "nomination_reason",
+    "file_name",
+    "nominator",
+    "uploader",
+    "uploader_is_nominator",
+    "deletion_category",
+    "is_a_moved_file_redirect",
+    "nomination_time",
+    "latest_revision_time",
+    "latest_revision_sha1",
+    "nomination_reason",
 )
 
 
@@ -49,7 +56,9 @@ class NominationCodec:
 
     def encode(self, nomination: DeletionNomination) -> dict[str, str]:
         return {
-            field: self._cipher.encrypt(str(getattr(nomination, field)).strip().encode()).decode()
+            field: self._cipher.encrypt(
+                str(getattr(nomination, field)).strip().encode()
+            ).decode()
             for field in WIRE_FIELDS
         }
 

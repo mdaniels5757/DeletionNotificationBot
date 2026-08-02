@@ -32,12 +32,18 @@ class NotifierService:
             nomination = self.codec.decode(value).with_marker(Path(marker))
             if nomination.deletion_category not in policies:
                 continue
-            groups[(nomination.deletion_category, nomination.uploader)].append(nomination)
+            groups[(nomination.deletion_category, nomination.uploader)].append(
+                nomination
+            )
 
         submissions = 0
         for (category, uploader), nominations in groups.items():
             policy = policies[category]
-            eligible = [item for item in nominations if self.wiki.is_notifiable(item, policy.needs_subpage)]
+            eligible = [
+                item
+                for item in nominations
+                if self.wiki.is_notifiable(item, policy.needs_subpage)
+            ]
             # The legacy notifier removes markers for all explicitly suppressed items.
             for item in nominations:
                 # AntiCompositeBot suppression intentionally leaves the marker for the

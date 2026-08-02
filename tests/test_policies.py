@@ -5,19 +5,39 @@ from policies import POLICIES, SIGNATURE, categories_for, render_notice
 
 
 def item(category, reason="Reason"):
-    return DeletionNomination("File:One.jpg", "Nominator", "Uploader", "False", category, "False", "n", "l", "a" * 40, reason)
+    return DeletionNomination(
+        "File:One.jpg",
+        "Nominator",
+        "Uploader",
+        "False",
+        category,
+        "False",
+        "n",
+        "l",
+        "a" * 40,
+        reason,
+    )
 
 
 def test_registry_has_all_prioritized_categories():
     categories = categories_for(date(2026, 8, 2))
     assert len(categories) == 8
-    assert categories[:4] == ["Advertisements for speedy deletion", "Copyright violations", "Other speedy deletions", "Personal files for speedy deletion"]
+    assert categories[:4] == [
+        "Advertisements for speedy deletion",
+        "Copyright violations",
+        "Other speedy deletions",
+        "Personal files for speedy deletion",
+    ]
 
 
 def test_each_policy_renders_first_notice_and_standard_nominator():
     for policy in POLICIES:
         category = policy.category(date(2026, 8, 2))
-        reason = "REASON:|###x###-SUBPAGE:###Example###" if policy.needs_subpage else "Reason"
+        reason = (
+            "REASON:|###x###-SUBPAGE:###Example###"
+            if policy.needs_subpage
+            else "Reason"
+        )
         text = render_notice(policy, [item(category, reason)])
         assert "File:One.jpg" in text
         assert "{{Noping|Nominator}}" in text
