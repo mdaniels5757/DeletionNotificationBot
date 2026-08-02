@@ -24,3 +24,10 @@ dev = ["pytest>=8.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ty.environment]
+# The application is run as scripts from this directory, so its modules are
+# intentionally importable directly from `predeletion/` (for example,
+# `from models import DeletionNomination`).  Mirror that runtime import path
+# for static analysis; pytest's conftest already does the same at runtime.
+extra-paths = ["predeletion"]

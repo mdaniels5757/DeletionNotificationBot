@@ -1,6 +1,6 @@
 """Pywikibot adapter kept at the application edge."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 
 import pywikibot
@@ -94,7 +94,7 @@ class WikimediaGateway:
         if not subpage:
             for backlink in page.backlinks(follow_redirects=True, namespaces=4):
                 title = backlink.title()
-                if "Commons:Deletion requests/" not in title or "Commons:Deletion requests/%s" % datetime.utcnow().strftime("%Y") in title:
+                if "Commons:Deletion requests/" not in title or "Commons:Deletion requests/%s" % datetime.now(tz=timezone.utc).strftime("%Y") in title:
                     continue
                 if file_name.replace(" ", "_") in pywikibot.Page(self.site, title).get().replace(" ", "_"):
                     subpage = title.replace("Commons:Deletion requests/", "")
@@ -124,8 +124,7 @@ class WikimediaGateway:
             return False
         talk = pywikibot.Page(self.site, "User_talk:%s" % nomination.uploader)
         if talk.isRedirectPage():
-            target = talk.getRedirectTarget()
-            talk = target.getUserTalkPage() if not target.isTalkPage() and "user:" in target.title().lower() else target
+            talk= talk.getRedirectTarget()
         text = talk.get().replace(" ", "_").lower()
         if nomination.file_name.replace(" ", "_").lower() in text:
             return False

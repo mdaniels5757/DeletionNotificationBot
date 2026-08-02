@@ -1,6 +1,6 @@
 """Publisher compatibility facade and composition root."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pywikibot
 import redis
@@ -18,7 +18,7 @@ class FileNominatedForDeletion:
         self.file_name = file_name
         self.site = site or pywikibot.Site()
         self._gateway = WikimediaGateway(self.site)
-        nomination = self._gateway.build_nomination(file_name, datetime.utcnow().date())
+        nomination = self._gateway.build_nomination(file_name, datetime.now(tz=timezone.utc).date())
         if nomination is None:
             raise ValueError("%s is not in a supported deletion category" % file_name)
         self.nomination = nomination

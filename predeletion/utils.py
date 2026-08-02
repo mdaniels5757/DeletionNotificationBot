@@ -1,10 +1,10 @@
-import datetime
+from datetime import datetime, timezone
 import pywikibot
 import requests
 from urllib3.exceptions import HTTPError
 from policies import categories_for
 
-today = datetime.datetime.now(datetime.timezone.utc)
+today = datetime.now(tz=timezone.utc)
 
 deletion_categories = categories_for(today.date())
 
@@ -49,8 +49,7 @@ def revision_that_added_the_text_first(SITE, pagename, texts_to_search, **kwargs
         content=True, reverse=False, total=number_of_revisions_to_check
     )
     found_nom = False
-    timestamp = False
-    data = ()
+    data = None
 
     for revdata in history:
 
@@ -63,15 +62,11 @@ def revision_that_added_the_text_first(SITE, pagename, texts_to_search, **kwargs
             text_to_be_searched = text_to_be_searched + "\n" + edit_summary
 
         if found_nom:
-
-            if data[3].lower() not in text_to_be_searched:
+            if data is not None and data[3].lower() not in text_to_be_searched:
                 return data
-
             else:
-
                 found_nom = False
-                timestamp = None
-                data = ()
+                data = None
 
         for text in texts_to_search:
 

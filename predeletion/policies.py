@@ -8,12 +8,14 @@ from datetime import date
 import re
 from typing import Callable
 
+from models import DeletionNomination
+
 STANDARD_NOMINATOR = (
     "\n<p style=\"font-family:'Stencil Std'\">\nUser who nominated the file for deletion "
     "(Nominator) : {{Noping|%s}}.</p>"
 )
 
-HOTWORDS = {
+HOTWORDS: dict[str, tuple[str, ...]] = {
     "ads": ("{{SD|G10}}", "G10", "spam"),
     "copyvio": ("{{copyvio", "Possible copyright violation", "Marking as possible copyvio", "{{logo", "db-copyvio", "{{SD|F3}}"),
     "speedy": ("{{SD", "{{Speedydelete|", "{{speedy|", "Requesting speedy deletion", "{{speedydeletion", "{{csd", "spd|f10", "db-g7", "SD|1=G7", "g7", "{{speedy", "{{db"),
@@ -35,8 +37,8 @@ class CategoryPolicy:
     key: str
     category: Callable[[date], str]
     hotwords: tuple[str, ...]
-    first_notice: Callable[[object, str | None], str]
-    detail: Callable[[object, str | None], str]
+    first_notice: Callable[[DeletionNomination, str | None], str]
+    detail: Callable[[DeletionNomination, str | None], str]
     needs_subpage: bool = False
 
 
@@ -44,19 +46,19 @@ def _fixed(name: str) -> Callable[[date], str]:
     return lambda _: name
 
 
-def _notice(template: str) -> Callable[[object, str | None], str]:
+def _notice(template: str) -> Callable[[DeletionNomination, str | None], str]:
     return lambda item, _: template % tuple([item.file_name] * template.count("%s"))
 
 
-def _reason_detail(item: object, _: str | None) -> str:
+def _reason_detail(item: DeletionNomination, _: str | None) -> str:
     return "Reason : %s" % item.nomination_reason
 
 
-def _dr_notice(item: object, subpage: str | None) -> str:
+def _dr_notice(item: DeletionNomination, subpage: str | None) -> str:
     return "\n{{subst:idw|1=%s|2=%s}}" % (item.file_name, subpage)
 
 
-def _dr_detail(_: object, subpage: str | None) -> str:
+def _dr_detail(_: DeletionNomination, subpage: str | None) -> str:
     return "Entry page : [[Commons:Deletion requests/%s]]" % subpage
 
 
@@ -80,11 +82,11 @@ def categories_for(day: date) -> list[str]:
     return [policy.category(day) for policy in POLICIES]
 
 
-def find_policy(category: str, day: date) -> CategoryPolicy | None:
+def find_policy(category: str, day: date) -> CategoryPolicy:
     for policy in POLICIES:
         if category == policy.category(day):
             return policy
-    return None
+    raise ValueError("No policy found for category %s" % category)
 
 
 def parse_deletion_request_reason(reason: str) -> tuple[str, str]:
@@ -94,7 +96,7 @@ def parse_deletion_request_reason(reason: str) -> tuple[str, str]:
     return match.group(1), match.group(2)
 
 
-def render_notice(policy: CategoryPolicy, nominations: list[object]) -> str:
+def render_notice(policy: CategoryPolicy, nominations: list[DeletionNomination]) -> str:
     """Render the legacy grouped talk-page text, excluding its edit summary."""
     notice = ""
     for index, item in enumerate(nominations, 1):
@@ -110,7 +112,7 @@ def render_notice(policy: CategoryPolicy, nominations: list[object]) -> str:
     return notice
 
 
-def edit_summary(category: str, nominations: list[object]) -> str:
+def edit_summary(category: str, nominations: list[DeletionNomination]) -> str:
     first = nominations[0].file_name
     extra = "and %d other file(s)" % (len(nominations) - 1) if len(nominations) > 1 else " "
     return "Impending deletion notification - [[Category:%s|%s]] - [[:%s]] %s" % (category, category, first, extra)
