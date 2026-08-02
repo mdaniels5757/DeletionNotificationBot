@@ -1,19 +1,12 @@
 import datetime
 import pywikibot
+import requests
 from urllib3.exceptions import HTTPError
+from policies import categories_for
 
-today = datetime.datetime.utcnow()
+today = datetime.datetime.now(datetime.timezone.utc)
 
-deletion_categories = [
-    "Advertisements for speedy deletion",  # 0
-    "Copyright violations",  # 1
-    "Other speedy deletions",  # 2
-    "Personal files for speedy deletion",  # 3
-    "Deletion requests %s" % today.strftime("%B %Y"),  # 4
-    "Media without a license as of %s" % today.strftime("%-d %B %Y"),  # 5
-    "Media missing permission as of %s" % today.strftime("%-d %B %Y"),  # 6
-    "Media without a source as of %s" % today.strftime("%-d %B %Y"),  # 7
-]
+deletion_categories = categories_for(today.date())
 
 
 def revision_that_added_the_text_first(SITE, pagename, texts_to_search, **kwargs):
@@ -164,7 +157,7 @@ def page_creator(page, link=False, obj=False):
 
     if obj:
         # pywikibot user object
-        return pywikibot.User(SITE, username)
+        return pywikibot.User(page.site, username)
 
     # return just the username without namespace "User:", e.g. will
     # return 'ExampleEditor' for 'User:ExampleEditor'

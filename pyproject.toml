@@ -18,3 +18,9 @@ dependencies = [
     "urllib3>=2.7.0",
     "wikitextparser>=0.56.4",
 ]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

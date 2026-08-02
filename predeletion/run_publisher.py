@@ -4,7 +4,10 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import publisher, eventstreams, hotwords, utils
+import eventstreams
+import hotwords
+import publisher
+import utils
 
 
 hot_words = (
@@ -73,9 +76,6 @@ def main(*args):
 
     for change in eventstreams.recentchanges():
         title = change[0]
-        comment = change[1]
-        revisionid = change[2]
-        parsedcomment = change[3]
         user = change[4]
         timestamp = change[5]
 
@@ -94,4 +94,3 @@ if __name__ == "__main__":
             main()
         except Exception as err:
             print(err)
-

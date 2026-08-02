@@ -16,6 +16,7 @@ pkgs.mkShell {
       urllib3
       wikitextparser
       ipython
+      pytest
     ]))
     uv
     ty

@@ -1,7 +1,4 @@
 import redis
-from datetime import timedelta
-import time
-import json
 
 from config import (
     REDIS_HOST,
@@ -13,23 +10,18 @@ from config import (
 )
 
 
+from transport import RedisMarkerTransport
+
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+transport = RedisMarkerTransport(r, REDIS_PREFIX, EXPIREMINS, PUBFILEDIR)
 
 
 def setex(key, value):
-    secure_key = REDIS_PREFIX + key
-    json_dumps_value = json.dumps(value)
-    r.setex(secure_key, timedelta(minutes=EXPIREMINS), json_dumps_value)
-    file_name = PUBFILEDIR + str(int(time.time())) + "_" + key
-    open(file_name, "a").close()
+    return transport.publish(key, value)
 
 
 def get(key):
-    secure_key = REDIS_PREFIX + key
-    value = r.get(secure_key)
-    if not value:
-        return None
-    return json.loads(value.decode())
+    return transport.get(key)
 
 
 if __name__ == "__main__":
