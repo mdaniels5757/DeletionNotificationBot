@@ -39,7 +39,7 @@ def nominated_for_deletion_in_this_change(file_name: str, user: str, timestamp: 
         ).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         print(
-            f"user: {user}, revision.user: {revision.user}, timestamp: {timestamp}, revision.timestamp: {revision.timestamp}"
+            f"user: {user}, revision.user: {revision.user}, timestamp: {str_timestamp}, revision.timestamp: {revision.timestamp}"
         )
         return revision.user == user and revision.timestamp == str_timestamp
 
