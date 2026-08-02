@@ -1,10 +1,10 @@
 - name: publisher
-  image: python3.11
+  image: python3.13
   command: $HOME/DeletionNotificationBot/start_pre_del_publisher.sh
   continuous: true
   health-check-script: ./publisher-health-check.bash
 - name: notifier
-  image: python3.11
+  image: python3.13
   command: $HOME/DeletionNotificationBot/start_pre_del_notify.sh
   continuous: true
   health-check-script: ./notifier-health-check.bash
