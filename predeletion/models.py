@@ -1,6 +1,6 @@
 """Stable records exchanged between the publisher and notifier."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 from pathlib import Path
 from typing import Mapping
@@ -45,7 +45,7 @@ class DeletionNomination:
         return f"{self.category_hash}_{self.latest_revision_sha1}"
 
     def with_marker(self, path: Path) -> "DeletionNomination":
-        return DeletionNomination(**{**self.__dict__, "marker_path": path})
+        return replace(self, marker_path=path)
 
 
 class NominationCodec:
@@ -63,11 +63,23 @@ class NominationCodec:
         }
 
     def decode(self, value: Mapping[str, str]) -> DeletionNomination:
-        data = {
-            field: self._cipher.decrypt(value[field].encode()).decode()
-            for field in WIRE_FIELDS
-        }
-        return DeletionNomination(**data)
+        return DeletionNomination(
+            file_name=self._decrypt_field(value, "file_name"),
+            nominator=self._decrypt_field(value, "nominator"),
+            uploader=self._decrypt_field(value, "uploader"),
+            uploader_is_nominator=self._decrypt_field(value, "uploader_is_nominator"),
+            deletion_category=self._decrypt_field(value, "deletion_category"),
+            is_a_moved_file_redirect=self._decrypt_field(
+                value, "is_a_moved_file_redirect"
+            ),
+            nomination_time=self._decrypt_field(value, "nomination_time"),
+            latest_revision_time=self._decrypt_field(value, "latest_revision_time"),
+            latest_revision_sha1=self._decrypt_field(value, "latest_revision_sha1"),
+            nomination_reason=self._decrypt_field(value, "nomination_reason"),
+        )
+
+    def _decrypt_field(self, value: Mapping[str, str], field: str) -> str:
+        return self._cipher.decrypt(value[field].encode()).decode()
 
 
 def marker_name(timestamp: int | str, redis_key: str) -> str:
