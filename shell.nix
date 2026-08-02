@@ -17,6 +17,7 @@ pkgs.mkShell {
       wikitextparser
       ipython
       pytest
+      pytest-cov
     ]))
     uv
     ty
