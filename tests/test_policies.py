@@ -6,16 +6,16 @@ from policies import POLICIES, SIGNATURE, categories_for, render_notice
 
 def item(category, reason="Reason"):
     return DeletionNomination(
-        "File:One.jpg",
-        "Nominator",
-        "Uploader",
-        "False",
-        category,
-        "False",
-        "n",
-        "l",
-        "a" * 40,
-        reason,
+        file_name="File:One.jpg",
+        nominator="Nominator",
+        uploader="Uploader",
+        uploader_is_nominator=False,
+        deletion_category=category,
+        is_a_moved_file_redirect=False,
+        nomination_time="n",
+        latest_revision_time="l",
+        latest_revision_sha1="a" * 40,
+        nomination_reason=reason,
     )
 
 

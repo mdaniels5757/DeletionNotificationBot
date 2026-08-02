@@ -14,7 +14,7 @@ hot_words = [hotword for category in HOTWORDS.values() for hotword in category]
 SITE: pywikibot.site.BaseSite
 
 
-def nominated_for_deletion_in_this_change(file_name, user, timestamp):
+def nominated_for_deletion_in_this_change(file_name: str, user: str, timestamp: str):
     page = pywikibot.Page(SITE, file_name)
     found_cats = []
     deletion_cat = None
@@ -33,33 +33,20 @@ def nominated_for_deletion_in_this_change(file_name, user, timestamp):
 
     revision = utils.revision_that_added_the_text_first(SITE, file_name, hot_words)
 
-    if not revision:
-        return False
+    if revision and revision.user and revision.timestamp:
+        str_timestamp = datetime.fromtimestamp(
+            int(timestamp), tz=timezone.utc
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    (
-        nominator,
-        content,
-        comment,
-        matched_hotword,
-        nomination_time,
-    ) = revision
-
-    if nominator and nomination_time:
-        str_timestamp = datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
+        print(
+            f"user: {user}, revision.user: {revision.user}, timestamp: {timestamp}, revision.timestamp: {revision.timestamp}"
         )
-
-        if (str(nominator) == str(user)) and (
-            str(nomination_time) == str(str_timestamp)
-        ):
-            return True
+        return revision.user == user and revision.timestamp == str_timestamp
 
     return False
 
 
-def main(*args):
-    args = pywikibot.handle_args(*args)
-
+def main():
     global SITE
     SITE = pywikibot.Site()
 
@@ -67,12 +54,12 @@ def main(*args):
         SITE.login()
 
     for change in eventstreams.recentchanges():
-        title = change[0]
-        user = change[4]
-        timestamp = change[5]
-
-        if nominated_for_deletion_in_this_change(title, user, timestamp):
-            file_nominated_for_deletion = publisher.FileNominatedForDeletion(title)
+        if nominated_for_deletion_in_this_change(
+            change.title, change.user, change.timestamp
+        ):
+            file_nominated_for_deletion = publisher.FileNominatedForDeletion(
+                change.title
+            )
             print(repr(file_nominated_for_deletion))
             file_nominated_for_deletion.publish()
         if (

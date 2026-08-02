@@ -31,16 +31,16 @@ class FakeWiki:
 
 def record(name="File:One.jpg", sha1="a" * 40):
     return DeletionNomination(
-        name,
-        "Nom",
-        "Up",
-        "False",
-        "Copyright violations",
-        "False",
-        "n",
-        "l",
-        sha1,
-        "Reason",
+        file_name=name,
+        nominator="Nom",
+        uploader="Up",
+        uploader_is_nominator=False,
+        deletion_category="Copyright violations",
+        is_a_moved_file_redirect=False,
+        nomination_time="n",
+        latest_revision_time="l",
+        latest_revision_sha1=sha1,
+        nomination_reason="Reason",
     )
 
 

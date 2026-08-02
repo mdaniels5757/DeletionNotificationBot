@@ -1,3 +1,5 @@
+from typing import Generator
+from dataclasses import dataclass
 from sseclient import SSEClient as EventSource
 import json
 
@@ -23,17 +25,29 @@ def stream():
             print("###ERROR : Event stream error ", event.data)
 
 
-def recentchanges():
+@dataclass(frozen=True, kw_only=True)
+class Change:
+    title: str
+    comment: str
+    revisionid: int
+    parsedcomment: str
+    user: str
+    timestamp: str
+
+
+def recentchanges() -> Generator[Change, None, None]:
     for data in stream():
         print(data)
-        title = data["title"]
-        comment = data["comment"]
-        revisionid = data["revision"]["new"]
-        parsedcomment = data["parsedcomment"]
-        user = data["user"]
-        timestamp = data["timestamp"]
-        print(title, comment, revisionid, parsedcomment)
-        yield (title, comment, revisionid, parsedcomment, user, timestamp)
+        change = Change(
+            title=data["title"],
+            comment=data["comment"],
+            revisionid=data["revision"]["new"],
+            parsedcomment=data["parsedcomment"],
+            user=data["user"],
+            timestamp=data["timestamp"],
+        )
+        print(change.title, change.comment, change.revisionid, change.parsedcomment)
+        yield change
 
 
 if __name__ == "__main__":

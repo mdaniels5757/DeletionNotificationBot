@@ -14,7 +14,7 @@ from wikimedia import WikimediaGateway
 class FileNominatedForDeletion:
     """Legacy public facade for publishing one nominated file."""
 
-    def __init__(self, file_name, site=None):
+    def __init__(self, file_name: str, site: pywikibot.site.BaseSite | None = None):
         self.file_name = file_name
         self.site = site or pywikibot.Site()
         self._gateway = WikimediaGateway(self.site)

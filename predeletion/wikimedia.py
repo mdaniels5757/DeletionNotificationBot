@@ -1,6 +1,6 @@
 """Pywikibot adapter kept at the application edge."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 import re
 
 import pywikibot
@@ -44,23 +44,29 @@ class WikimediaGateway:
     def __init__(self, site):
         self.site = site
 
-    def category_for(self, page, day):
+    def category_for(self, page: pywikibot.Page, day: date) -> str | None:
         found = {category.title(with_ns=False) for category in page.categories()}
         return next(
             (category for category in categories_for(day) if category in found), None
         )
 
-    def nomination_details(self, file_name, category, page, day):
+    def nomination_details(
+        self, file_name: str, category: str, page: pywikibot.Page, day: date
+    ) -> tuple[str | None, str | None, str]:
         policy = find_policy(category, day)
         revision = revision_that_added_the_text_first(
             self.site, file_name, policy.hotwords
         )
-        nominator, nomination_time = (
-            (revision[0], revision[4]) if revision else (None, None)
-        )
-        return nominator, nomination_time, self.reason_for(policy.key, file_name, page)
+        if revision and revision.user and revision.timestamp:
+            return (
+                revision.user,
+                revision.timestamp,
+                self.reason_for(policy.key, file_name, page),
+            )
+        else:
+            return None, None, self.reason_for(policy.key, file_name, page)
 
-    def reason_for(self, key, file_name, page):
+    def reason_for(self, key: str, file_name: str, page: pywikibot.Page) -> str:
         if key == "ads":
             return "[[Special:MyLanguage/COM:CSD#G10|CSD G10]] (files and pages created as advertisements)"
         if key == "personal":
@@ -160,16 +166,16 @@ class WikimediaGateway:
             subpage or "CANNOTFINDTHESUBPAGE",
         )
 
-    def build_nomination(self, file_name, day):
+    def build_nomination(self, file_name: str, day: date) -> DeletionNomination:
         page = pywikibot.Page(self.site, file_name)
         if not page.exists():
             raise pywikibot.exceptions.NoPageError(
                 page, "%s does not exist" % file_name
             )
         category = self.category_for(page, day)
-        if not category:
-            return None
-        latest = next(page.revisions(reverse=False, total=1))
+        if category is None:
+            raise ValueError("%s is not in a supported deletion category" % file_name)
+        latest: pywikibot.page.Revision = next(page.revisions(reverse=False, total=1))
         nominator, nominated_at, reason = self.nomination_details(
             file_name, category, page, day
         )
@@ -192,16 +198,16 @@ class WikimediaGateway:
             for revision in page.revisions(reverse=True, total=1)
         )
         return DeletionNomination(
-            file_name,
-            str(nominator),
-            str(uploader),
-            str(own),
-            category,
-            str(moved),
-            str(nominated_at),
-            str(latest.timestamp),
-            str(latest.sha1),
-            str(reason),
+            file_name=file_name,
+            nominator=nominator if nominator is not None else "Unknown nominator",
+            uploader=uploader,
+            uploader_is_nominator=own,
+            deletion_category=category,
+            is_a_moved_file_redirect=moved,
+            nomination_time=nominated_at or "Unknown nomination time",
+            latest_revision_time=latest.timestamp,
+            latest_revision_sha1=latest.sha1,
+            nomination_reason=reason,
         )
 
     def is_notifiable(self, nomination, needs_subpage=False):

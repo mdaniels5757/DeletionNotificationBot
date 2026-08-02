@@ -84,7 +84,7 @@ SIGNATURE = (
 )
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class CategoryPolicy:
     key: str
     category: Callable[[date], str]
@@ -114,73 +114,79 @@ def _dr_detail(_: DeletionNomination, subpage: str | None) -> str:
     return "Entry page : [[Commons:Deletion requests/%s]]" % subpage
 
 
-POLICIES = (
+POLICIES: tuple[CategoryPolicy, ...] = (
     CategoryPolicy(
-        "ads",
-        _fixed("Advertisements for speedy deletion"),
-        HOTWORDS["ads"],
-        _notice(
+        key="ads",
+        category=_fixed("Advertisements for speedy deletion"),
+        hotwords=HOTWORDS["ads"],
+        first_notice=_notice(
             "\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/NOADS/headingless|1=%s}}"
         ),
-        _reason_detail,
+        detail=_reason_detail,
     ),
     CategoryPolicy(
-        "copyvio",
-        _fixed("Copyright violations"),
-        HOTWORDS["copyvio"],
-        lambda item, _: (
+        key="copyvio",
+        category=_fixed("Copyright violations"),
+        hotwords=HOTWORDS["copyvio"],
+        first_notice=lambda item, _: (
             "\n\n{{subst:Copyvionote|1=%s|2=%s|3=}} "
             % (item.file_name, item.nomination_reason)
         ),
-        _reason_detail,
+        detail=_reason_detail,
     ),
     CategoryPolicy(
-        "speedy",
-        _fixed("Other speedy deletions"),
-        HOTWORDS["speedy"],
-        lambda item, _: (
+        key="speedy",
+        category=_fixed("Other speedy deletions"),
+        hotwords=HOTWORDS["speedy"],
+        first_notice=lambda item, _: (
             "\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/SDEL/headingless|1=%s|2=%s}}"
             % (item.file_name, item.file_name, item.nomination_reason)
         ),
-        _reason_detail,
+        detail=_reason_detail,
     ),
     CategoryPolicy(
-        "personal",
-        _fixed("Personal files for speedy deletion"),
-        HOTWORDS["personal"],
-        _notice(
+        key="personal",
+        category=_fixed("Personal files for speedy deletion"),
+        hotwords=HOTWORDS["personal"],
+        first_notice=_notice(
             "\n\n== [[:%s]] ==\n{{User:Deletion Notification Bot/personalNO/headingless|1=%s}}"
         ),
-        _reason_detail,
+        detail=_reason_detail,
     ),
     CategoryPolicy(
-        "dr",
-        lambda day: "Deletion requests %s" % day.strftime("%B %Y"),
-        HOTWORDS["dr"],
-        _dr_notice,
-        _dr_detail,
-        True,
+        key="dr",
+        category=lambda day: "Deletion requests %s" % day.strftime("%B %Y"),
+        hotwords=HOTWORDS["dr"],
+        first_notice=_dr_notice,
+        detail=_dr_detail,
+        needs_subpage=True,
     ),
     CategoryPolicy(
-        "license",
-        lambda day: "Media without a license as of %s" % day.strftime("%-d %B %Y"),
-        HOTWORDS["license"],
-        _notice("\n{{subst:image license|1=%s}}"),
-        _reason_detail,
+        key="license",
+        category=lambda day: (
+            "Media without a license as of %s" % day.strftime("%-d %B %Y")
+        ),
+        hotwords=HOTWORDS["license"],
+        first_notice=_notice("\n{{subst:image license|1=%s}}"),
+        detail=_reason_detail,
     ),
     CategoryPolicy(
-        "permission",
-        lambda day: "Media missing permission as of %s" % day.strftime("%-d %B %Y"),
-        HOTWORDS["permission"],
-        _notice("\n{{subst:image permission|1=%s}}"),
-        _reason_detail,
+        key="permission",
+        category=lambda day: (
+            "Media missing permission as of %s" % day.strftime("%-d %B %Y")
+        ),
+        hotwords=HOTWORDS["permission"],
+        first_notice=_notice("\n{{subst:image permission|1=%s}}"),
+        detail=_reason_detail,
     ),
     CategoryPolicy(
-        "source",
-        lambda day: "Media without a source as of %s" % day.strftime("%-d %B %Y"),
-        HOTWORDS["source"],
-        _notice("\n{{subst:Image source |1=%s}}"),
-        _reason_detail,
+        key="source",
+        category=lambda day: (
+            "Media without a source as of %s" % day.strftime("%-d %B %Y")
+        ),
+        hotwords=HOTWORDS["source"],
+        first_notice=_notice("\n{{subst:Image source |1=%s}}"),
+        detail=_reason_detail,
     ),
 )
 

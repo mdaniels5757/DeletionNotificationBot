@@ -5,16 +5,16 @@ from models import DeletionNomination, NominationCodec, marker_name
 
 def nomination():
     return DeletionNomination(
-        "File:Example.jpg",
-        "Nominator",
-        "Uploader",
-        "False",
-        "Copyright violations",
-        "False",
-        "2026-01-01",
-        "2026-01-02",
-        "a" * 40,
-        "A reason",
+        file_name="File:Example.jpg",
+        nominator="Nominator",
+        uploader="Uploader",
+        uploader_is_nominator=False,
+        deletion_category="Copyright violations",
+        is_a_moved_file_redirect=False,
+        nomination_time="2026-01-01",
+        latest_revision_time="2026-01-02",
+        latest_revision_sha1="a" * 40,
+        nomination_reason="A reason",
     )
 
 

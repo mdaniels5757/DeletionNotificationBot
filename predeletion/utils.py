@@ -1,3 +1,5 @@
+from typing import Sequence, overload, Literal, Self
+from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 import pywikibot
 import requests
@@ -9,7 +11,32 @@ today = datetime.now(tz=timezone.utc)
 deletion_categories = categories_for(today.date())
 
 
-def revision_that_added_the_text_first(SITE, pagename, texts_to_search, **kwargs):
+@dataclass(frozen=True, kw_only=True)
+class Revision:
+    user: str
+    content: str
+    edit_summary: str
+    timestamp: str
+
+
+@dataclass(frozen=True, kw_only=True)
+class MatchingRevision(Revision):
+    text: str
+
+    @classmethod
+    def from_revision(cls, revision: Revision, *, text: str) -> Self:
+        return cls(
+            **asdict(revision),
+            text=text,
+        )
+
+
+def revision_that_added_the_text_first(
+    SITE: pywikibot.site.BaseSite,
+    pagename: str,
+    texts_to_search: Sequence[str],
+    **kwargs,
+) -> MatchingRevision | None:
     """
     Find the revision of the page if which any of the text in texts_to_search
     was first added.
@@ -48,42 +75,28 @@ def revision_that_added_the_text_first(SITE, pagename, texts_to_search, **kwargs
     history = (page).revisions(
         content=True, reverse=False, total=number_of_revisions_to_check
     )
-    found_nom = False
-    data = None
 
     for revdata in history:
-        content = revdata["slots"]["main"]["*"].lower()
-        edit_summary = revdata.comment.lower()
-        user = revdata.user
-        text_to_be_searched = content
+        revision = Revision(
+            user=revdata.user,
+            content=revdata["slots"]["main"]["*"].lower(),
+            edit_summary=revdata.comment.lower(),
+            timestamp=revdata.timestamp,
+        )
 
         if search_the_edit_summary:
-            text_to_be_searched = text_to_be_searched + "\n" + edit_summary
-
-        if found_nom:
-            if data is not None and data[3].lower() not in text_to_be_searched:
-                return data
-            else:
-                found_nom = False
-                data = None
+            text_to_be_searched = revision.content + "\n" + revision.edit_summary
+        else:
+            text_to_be_searched = revision.content
 
         for text in texts_to_search:
             if text.lower() in text_to_be_searched:
-                found_nom = True
-                timestamp = revdata.timestamp
-                data = (user, content, edit_summary, text, timestamp)
-                break
-
-    # For cases when the oldest revision has the text we are looking for but
-    # we exhaust the history and break out of the look.
-    if found_nom:
-        return data
-
+                return MatchingRevision.from_revision(revision, text=text)
     else:
         return None
 
 
-def out(text, newline=True, date=False, color=None):
+def out(text: str, newline: bool = True, date: bool = False, color=None):
     """
     output text to the terminal / log.
 
@@ -101,7 +114,7 @@ def out(text, newline=True, date=False, color=None):
     pywikibot.stdout("%s%s" % (date_string, text), newline=newline)
 
 
-def commit(old_text, new_text, page, summary):
+def commit(old_text: str, new_text: str, page: pywikibot.Page, summary: str):
     """
     Show diff between old and new text and save the page with the new text.
 
@@ -118,7 +131,19 @@ def commit(old_text, new_text, page, summary):
     page.put(new_text, summary=summary, watch="nochange", minor=False)
 
 
-def page_creator(page, link=False, obj=False):
+@overload
+def page_creator(
+    page: pywikibot.Page, link: bool = False, obj: Literal[False] = False
+) -> str: ...
+@overload
+def page_creator(
+    page: pywikibot.Page, link: bool, obj: Literal[True]
+) -> pywikibot.User: ...
+
+
+def page_creator(
+    page: pywikibot.Page, link: bool = False, obj: bool = False
+) -> str | pywikibot.User:
     """
     User of created the page, they made the first revision on the page.
 
@@ -153,7 +178,7 @@ def page_creator(page, link=False, obj=False):
     return username
 
 
-def is_locked(user):
+def is_locked(user: str):
     """
     Check if an user is globally locked user. They are banned from
     all the wikis. And we should not be notifying them about deletions.

@@ -1,5 +1,7 @@
 """Stable records exchanged between the publisher and notifier."""
 
+from pywikibot.tools import strtobool
+
 from dataclasses import dataclass, replace
 import hashlib
 from pathlib import Path
@@ -22,14 +24,14 @@ WIRE_FIELDS = (
 )
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class DeletionNomination:
     file_name: str
     nominator: str
     uploader: str
-    uploader_is_nominator: str
+    uploader_is_nominator: bool
     deletion_category: str
-    is_a_moved_file_redirect: str
+    is_a_moved_file_redirect: bool
     nomination_time: str
     latest_revision_time: str
     latest_revision_sha1: str
@@ -67,10 +69,12 @@ class NominationCodec:
             file_name=self._decrypt_field(value, "file_name"),
             nominator=self._decrypt_field(value, "nominator"),
             uploader=self._decrypt_field(value, "uploader"),
-            uploader_is_nominator=self._decrypt_field(value, "uploader_is_nominator"),
+            uploader_is_nominator=strtobool(
+                self._decrypt_field(value, "uploader_is_nominator")
+            ),
             deletion_category=self._decrypt_field(value, "deletion_category"),
-            is_a_moved_file_redirect=self._decrypt_field(
-                value, "is_a_moved_file_redirect"
+            is_a_moved_file_redirect=strtobool(
+                self._decrypt_field(value, "is_a_moved_file_redirect")
             ),
             nomination_time=self._decrypt_field(value, "nomination_time"),
             latest_revision_time=self._decrypt_field(value, "latest_revision_time"),
