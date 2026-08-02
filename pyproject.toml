@@ -1,0 +1,20 @@
+[project]
+name = "deletionnotificationbot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "cryptography>=48.0.0",
+    "mwparserfromhell>=0.7.2",
+    "pywikibot>=11.2.0",
+    "pyyaml>=6.0.3",
+    "redis>=7.4.0",
+    "requests-oauthlib>=2.0.0",
+    "ruff>=0.15.12",
+    "sseclient>=0.0.27",
+    "tqdm>=4.67.3",
+    "ty>=0.0.34",
+    "urllib3>=2.7.0",
+    "wikitextparser>=0.56.4",
+]
