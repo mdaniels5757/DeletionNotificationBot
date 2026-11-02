@@ -72,7 +72,7 @@ def revision_that_added_the_text_first(
         number_of_revisions_to_check = 500
 
     page = pywikibot.Page(SITE, pagename)
-    history = (page).revisions(
+    history = page.revisions(
         content=True, reverse=False, total=number_of_revisions_to_check
     )
 
@@ -81,7 +81,8 @@ def revision_that_added_the_text_first(
             user=revdata.user,
             content=revdata["slots"]["main"]["*"].lower(),
             edit_summary=revdata.comment.lower(),
-            timestamp=revdata.timestamp,
+            # this str() is load-bearing
+            timestamp=str(revdata.timestamp),
         )
 
         if search_the_edit_summary:
