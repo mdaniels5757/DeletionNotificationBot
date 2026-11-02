@@ -42,6 +42,7 @@ class FileNominatedForDeletion:
     def publish(self, transport=None, codec=None):
         transport = transport or build_transport()
         codec = codec or NominationCodec(config.KEY)
+        print(f"Publishing {self.nomination.redis_key}")
         return transport.publish(
             self.nomination.redis_key, codec.encode(self.nomination)
         )
