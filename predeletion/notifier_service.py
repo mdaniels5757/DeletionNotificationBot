@@ -1,11 +1,14 @@
 """Pure orchestration for consuming and notifying deletion nominations."""
 
+import logging
 from collections import defaultdict
 from datetime import date, timedelta
 from pathlib import Path
 
 from models import NominationCodec
 from policies import SIGNATURE, category_policies, edit_summary, render_notice
+
+logger = logging.getLogger(__name__)
 
 
 class NotifierService:
@@ -36,9 +39,18 @@ class NotifierService:
                 nomination
             )
 
+        preferences = {
+            uploader: self.wiki.notification_preferences(uploader)
+            for uploader in {uploader for _, uploader in groups}
+        }
         submissions = 0
         for (category, uploader), nominations in groups.items():
             policy = policies[category]
+            settings = preferences[uploader]
+            if not settings.notifications:
+                for item in nominations:
+                    self.transport.acknowledge(item.marker_path)
+                continue
             eligible = [
                 item
                 for item in nominations
@@ -52,6 +64,19 @@ class NotifierService:
                     self.transport.acknowledge(item.marker_path)
             if not eligible:
                 continue
+            if not settings.notify_redirects:
+                try:
+                    redirects = [item for item in eligible if self.wiki.is_redirect(item)]
+                except Exception:
+                    logger.exception(
+                        "Could not check redirects for %s in %s", uploader, category
+                    )
+                    continue
+                for item in redirects:
+                    self.transport.acknowledge(item.marker_path)
+                eligible = [item for item in eligible if item not in redirects]
+                if not eligible:
+                    continue
             notice = render_notice(policy, eligible) + SIGNATURE
             self.wiki.submit(uploader, notice, edit_summary(category, eligible))
             for item in eligible:

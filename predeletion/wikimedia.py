@@ -1,13 +1,18 @@
 """Pywikibot adapter kept at the application edge."""
 
-from datetime import datetime, timezone, date
+import hashlib
+import logging
 import re
+from datetime import date, datetime, timezone
 
 import pywikibot
 
 from models import DeletionNomination
 from policies import categories_for, find_policy, parse_deletion_request_reason
+from preferences import NotificationPreferences
 from utils import commit, page_creator, revision_that_added_the_text_first
+
+logger = logging.getLogger(__name__)
 
 
 COPYVIO_REASONS = {
@@ -43,6 +48,55 @@ CSD_REASONS = {
 class WikimediaGateway:
     def __init__(self, site):
         self.site = site
+
+    def notification_preferences(self, uploader: str) -> NotificationPreferences:
+        page = pywikibot.Page(
+            self.site, f"User:{uploader}/Deletion Notification Bot.json"
+        )
+        try:
+            text = page.get()
+        except pywikibot.exceptions.NoPageError:
+            return NotificationPreferences()
+        except Exception:
+            logger.exception("Could not read notification preferences for %s", uploader)
+            return NotificationPreferences()
+        try:
+            return NotificationPreferences.from_json(text)
+        except ValueError:
+            logger.warning("Invalid notification preferences for %s", uploader)
+            try:
+                self._warn_invalid_preferences(uploader, text)
+            except Exception:
+                logger.exception("Could not warn %s about invalid preferences", uploader)
+            return NotificationPreferences()
+
+    def _warn_invalid_preferences(self, uploader: str, text: str) -> None:
+        # A content-specific marker prevents repeated warnings while allowing a
+        # new warning if the user changes the configuration and it remains invalid.
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        marker = f"<!-- Deletion Notification Bot invalid configuration: {digest} -->"
+        talk = pywikibot.Page(self.site, f"User talk:{uploader}")
+        if talk.isRedirectPage():
+            talk = talk.getRedirectTarget()
+        try:
+            old_text = talk.get()
+        except pywikibot.exceptions.NoPageError:
+            old_text = ""
+        if marker in old_text:
+            return
+        notice = (
+            "\n\n== Deletion Notification Bot configuration ==\n"
+            f"Your [[User:{uploader}/Deletion Notification Bot.json|bot configuration]] "
+            "is invalid. It must be a JSON object; the optional settings "
+            "<code>notifications</code> and <code>notify_redirects</code> must "
+            "be true or false; other settings are not supported. "
+            "The bot is using its default settings until the "
+            "configuration is fixed. ~~~~\n" + marker
+        )
+        commit(old_text, old_text + notice, talk, "Invalid bot notification configuration")
+
+    def is_redirect(self, nomination: DeletionNomination) -> bool:
+        return pywikibot.Page(self.site, nomination.file_name).isRedirectPage()
 
     def category_for(self, page: pywikibot.Page, day: date) -> str | None:
         found = {category.title(with_ns=False) for category in page.categories()}
