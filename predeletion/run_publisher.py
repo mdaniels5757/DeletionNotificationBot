@@ -38,10 +38,14 @@ def nominated_for_deletion_in_this_change(file_name: str, user: str, timestamp: 
             int(timestamp), tz=timezone.utc
         ).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        result = revision.user == user and revision.timestamp == str_timestamp
         print(
-            f"user: {user}, revision.user: {revision.user}, timestamp: {str_timestamp}, revision.timestamp: {revision.timestamp}"
+            "nominated_for_deletion_in_this_change: "
+            f"user: {user}, revision.user: {revision.user}, "
+            f"timestamp: {str_timestamp}, revision.timestamp: {revision.timestamp}. "
+            f"result: {result}"
         )
-        return revision.user == user and revision.timestamp == str_timestamp
+        return result
 
     return False
 
