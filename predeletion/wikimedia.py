@@ -264,9 +264,9 @@ class WikimediaGateway:
             nomination_reason=reason,
         )
 
-    def is_notifiable(self, nomination, needs_subpage=False):
+    def is_notifiable(self, nomination: DeletionNomination, needs_subpage=False):
         if (
-            nomination.is_a_moved_file_redirect == "True"
+            nomination.is_a_moved_file_redirect
             or nomination.nominator == nomination.uploader
             or nomination.nominator == "AntiCompositeBot"
         ):
