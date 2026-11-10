@@ -10,7 +10,6 @@ dependencies = [
     "pywikibot>=11.10.0",
     "pyyaml>=6.0.3",
     "redis>=7.4.0",
-    "requests-oauthlib>=2.0.0",
     "ruff>=0.17.4",
     "sseclient>=0.0.27",
     "tqdm>=4.70.1",

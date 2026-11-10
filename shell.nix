@@ -10,7 +10,6 @@ pkgs.mkShell {
       pywikibot
       pyyaml
       redis
-      requests-oauthlib
       sseclient
       tqdm
       urllib3
