@@ -1,12 +1,14 @@
-from typing import Sequence, overload, Literal, Self
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
+from collections.abc import Sequence
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from typing import Literal, Self, overload
+
 import pywikibot
 import requests
-from urllib3.exceptions import HTTPError
 from policies import categories_for
+from urllib3.exceptions import HTTPError
 
-today = datetime.now(tz=timezone.utc)
+today = datetime.now(tz=UTC)
 
 deletion_categories = categories_for(today.date())
 
@@ -93,8 +95,7 @@ def revision_that_added_the_text_first(
         for text in texts_to_search:
             if text.lower() in text_to_be_searched:
                 return MatchingRevision.from_revision(revision, text=text)
-    else:
-        return None
+    return None
 
 
 def out(text: str, newline: bool = True, date: bool = False, color=None):

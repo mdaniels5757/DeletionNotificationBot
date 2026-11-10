@@ -2,13 +2,12 @@
 
 import time
 
+import config
 import pywikibot
 import redis
-from tqdm import tqdm
-
-import config
 from models import NominationCodec
 from notifier_service import NotifierService
+from tqdm import tqdm
 from transport import RedisMarkerTransport
 from wikimedia import WikimediaGateway
 

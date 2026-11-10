@@ -3,10 +3,10 @@
 This is intentionally the one place to extend when Commons adds a category.
 """
 
+import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
-import re
-from typing import Callable
 
 from models import DeletionNomination
 

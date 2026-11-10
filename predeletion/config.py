@@ -6,6 +6,7 @@ configuration importable by other modules.
 """
 
 import os
+
 import yaml
 
 BASE_PATH = os.path.join(os.path.dirname(__file__), "..")

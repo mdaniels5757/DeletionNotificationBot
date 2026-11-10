@@ -1,14 +1,12 @@
 """Stable records exchanged between the publisher and notifier."""
 
-from pywikibot.tools import strtobool
-
-from dataclasses import dataclass, replace
 import hashlib
+from collections.abc import Mapping
+from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Mapping
 
 from cryptography.fernet import Fernet
-
+from pywikibot.tools import strtobool
 
 WIRE_FIELDS = (
     "file_name",

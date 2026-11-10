@@ -3,10 +3,9 @@
 import hashlib
 import logging
 import re
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 import pywikibot
-
 from models import DeletionNomination
 from policies import categories_for, find_policy, parse_deletion_request_reason
 from preferences import NotificationPreferences
@@ -211,7 +210,7 @@ class WikimediaGateway:
                 if (
                     "Commons:Deletion requests/" not in title
                     or "Commons:Deletion requests/%s"
-                    % datetime.now(tz=timezone.utc).strftime("%Y")
+                    % datetime.now(tz=UTC).strftime("%Y")
                     in title
                 ):
                     continue

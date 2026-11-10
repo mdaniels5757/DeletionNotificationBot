@@ -1,12 +1,12 @@
-from datetime import date
 from dataclasses import replace
-from cryptography.fernet import Fernet
-import pytest
+from datetime import date
 
+import pytest
+from cryptography.fernet import Fernet
 from models import DeletionNomination, NominationCodec
 from notifier_service import NotifierService
-from transport import RedisMarkerTransport
 from preferences import NotificationPreferences
+from transport import RedisMarkerTransport
 
 
 class FakeRedis:
@@ -138,8 +138,15 @@ def test_all_redirects_are_acknowledged_without_notification(tmp_path):
 
 def test_opt_out_acknowledges_all_categories_and_reads_once(tmp_path):
     wiki = FakeWiki()
-    wiki.preferences = NotificationPreferences(notifications=False, notify_redirects=False)
-    items = [record(), replace(record("File:Two.jpg", "b" * 40), deletion_category="Other speedy deletions")]
+    wiki.preferences = NotificationPreferences(
+        notifications=False, notify_redirects=False
+    )
+    items = [
+        record(),
+        replace(
+            record("File:Two.jpg", "b" * 40), deletion_category="Other speedy deletions"
+        ),
+    ]
     service, markers = setup_group(tmp_path, items, wiki)
     assert service.process_once() == 0
     assert wiki.preference_calls == ["Up"]
@@ -151,21 +158,22 @@ def test_redirect_error_retries_eligible_items(tmp_path):
     wiki.preferences = NotificationPreferences(notify_redirects=False)
     wiki.redirect_error = True
     wiki.ineligible.add("File:Two.jpg")
-    service, markers = setup_group(tmp_path, [record(), record("File:Two.jpg", "b" * 40)], wiki)
+    service, markers = setup_group(
+        tmp_path, [record(), record("File:Two.jpg", "b" * 40)], wiki
+    )
     assert service.process_once() == 0
     assert not wiki.submissions
     assert markers[0].exists() and not markers[1].exists()
 
 
 def test_submission_failure_keeps_non_redirect_marker(tmp_path):
-    wiki = FakeWiki()
+    class FailingWiki(FakeWiki):
+        def submit(self, uploader, notice, summary):
+            raise RuntimeError("edit failed")
+
+    wiki = FailingWiki()
     wiki.preferences = NotificationPreferences(notify_redirects=False)
     wiki.redirects.add("File:One.jpg")
-
-    def fail_submit(*args):
-        raise RuntimeError("edit failed")
-
-    wiki.submit = fail_submit
     service, markers = setup_group(
         tmp_path, [record(), record("File:Two.jpg", "b" * 40)], wiki
     )

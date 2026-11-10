@@ -1,9 +1,9 @@
 """Redis plus marker-file compatibility transport."""
 
-from datetime import timedelta
-from pathlib import Path
 import json
 import time
+from datetime import timedelta
+from pathlib import Path
 
 from models import marker_name
 

@@ -3,7 +3,7 @@ import sys
 import time
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from config import PUBFILEDIR, EXPIREMINS
+from config import EXPIREMINS, PUBFILEDIR
 
 for f in os.listdir(PUBFILEDIR):
     f = os.path.join(PUBFILEDIR, f)

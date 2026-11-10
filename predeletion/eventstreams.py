@@ -1,7 +1,8 @@
-from typing import Generator
-from dataclasses import dataclass
-from sseclient import SSEClient as EventSource
 import json
+from collections.abc import Generator
+from dataclasses import dataclass
+
+from sseclient import SSEClient as EventSource
 
 
 def stream():
@@ -35,7 +36,7 @@ class Change:
     timestamp: str
 
 
-def recentchanges() -> Generator[Change, None, None]:
+def recentchanges() -> Generator[Change]:
     for data in stream():
         print(data)
         change = Change(

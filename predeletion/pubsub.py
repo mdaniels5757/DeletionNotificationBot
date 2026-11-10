@@ -1,15 +1,12 @@
 import redis
-
 from config import (
-    REDIS_HOST,
-    REDIS_PORT,
-    REDIS_DB,
-    REDIS_PREFIX,
     EXPIREMINS,
     PUBFILEDIR,
+    REDIS_DB,
+    REDIS_HOST,
+    REDIS_PORT,
+    REDIS_PREFIX,
 )
-
-
 from transport import RedisMarkerTransport
 
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
