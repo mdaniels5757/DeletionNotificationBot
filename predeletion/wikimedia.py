@@ -67,7 +67,9 @@ class WikimediaGateway:
             try:
                 self._warn_invalid_preferences(uploader, text)
             except Exception:
-                logger.exception("Could not warn %s about invalid preferences", uploader)
+                logger.exception(
+                    "Could not warn %s about invalid preferences", uploader
+                )
             return NotificationPreferences()
 
     def _warn_invalid_preferences(self, uploader: str, text: str) -> None:
@@ -93,7 +95,9 @@ class WikimediaGateway:
             "The bot is using its default settings until the "
             "configuration is fixed. ~~~~\n" + marker
         )
-        commit(old_text, old_text + notice, talk, "Invalid bot notification configuration")
+        commit(
+            old_text, old_text + notice, talk, "Invalid bot notification configuration"
+        )
 
     def is_redirect(self, nomination: DeletionNomination) -> bool:
         return pywikibot.Page(self.site, nomination.file_name).isRedirectPage()

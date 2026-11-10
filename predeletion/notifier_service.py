@@ -66,7 +66,9 @@ class NotifierService:
                 continue
             if not settings.notify_redirects:
                 try:
-                    redirects = [item for item in eligible if self.wiki.is_redirect(item)]
+                    redirects = [
+                        item for item in eligible if self.wiki.is_redirect(item)
+                    ]
                 except Exception:
                     logger.exception(
                         "Could not check redirects for %s in %s", uploader, category
